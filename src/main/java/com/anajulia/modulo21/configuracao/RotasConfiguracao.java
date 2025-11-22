@@ -14,7 +14,7 @@ public class RotasConfiguracao {
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchange -> exchange
                         .pathMatchers(
-                                "/anajulia/modulo2.2/login/**"
+                                "/anajulia/modulo2.2/v1/login/**"
                         )
                         .permitAll()
                         .anyExchange()
