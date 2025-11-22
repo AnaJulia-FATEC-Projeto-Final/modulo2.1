@@ -78,7 +78,7 @@ services:
     environment:
       SECRET_KEY: "o36pEukmNV48mJkKkRt8GoYtfbXfszupz6Zrq6jPAEC"
       MODULO1_URI: http://modulo1:8082
-      MODULO2.2_URI: http://modulo2.2:8081
+      MODULO2_2_URI: http://modulo2.2:8081
     depends_on:
       - modulo1
       - modulo2.2

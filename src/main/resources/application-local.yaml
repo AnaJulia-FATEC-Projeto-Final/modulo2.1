@@ -9,12 +9,12 @@ spring:
     gateway:
       routes:
         - id: modulo1
-          uri: ${MODULO1_URL}
+          uri: http://localhost:8082
           predicates:
             - Path=/anajulia/modulo1/**
 
-        - id: modulo2_2
-          uri: ${MODULO2_2_URL}
+        - id: modulo2.2
+          uri: http://localhost:8081
           predicates:
             - Path=/anajulia/modulo2.2/**
 
@@ -22,4 +22,4 @@ server:
   port: 8080
 
 secret:
-  key: ${SECRET_KEY}
+  key: "o36pEukmNV48mJkKkRt8GoYtfbXfszupz6Zrq6jPAEC"
