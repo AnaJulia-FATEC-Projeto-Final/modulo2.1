@@ -1,0 +1,102 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    hostname: mongodb
+    container_name: mongodb
+    restart: unless-stopped
+    environment:
+      - "TZ=America/Sao_Paulo"
+    ports:
+      - "27017:27017"
+    networks:
+      - anajulia-network
+
+  opensearch:
+    image: opensearchproject/opensearch:2.4.0
+    hostname: opensearch
+    container_name: opensearch
+    depends_on:
+      - mongodb
+    environment:
+      - discovery.type=single-node
+      - plugins.security.disabled=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    ports:
+      - "9200:9200"
+      - "9600:9600"
+    restart: on-failure
+    networks:
+      - anajulia-network
+
+  graylog:
+    image: graylog/graylog:5.1.5
+    hostname: graylog
+    container_name: graylog
+    depends_on:
+      - mongodb
+      - opensearch
+    environment:
+      GRAYLOG_PASSWORD_SECRET: "f62c92ac283e4f1f969ad5e71d4c7b2e11e9bdbf5e193ae7bb4e9b4e1e956e437c98a43cd624c5ea8a2c97b9463f96e8"
+      GRAYLOG_ROOT_PASSWORD_SHA2: "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918"
+      GRAYLOG_HTTP_BIND_ADDRESS: "0.0.0.0:9000"
+      GRAYLOG_HTTP_EXTERNAL_URI: "http://localhost:9000/"
+      GRAYLOG_MONGODB_URI: "mongodb://mongodb:27017/graylog"
+      GRAYLOG_ELASTICSEARCH_HOSTS: "http://opensearch:9200"
+    ports:
+      - "9000:9000"
+      - "12201:12201/udp"
+    restart: on-failure
+    networks:
+      - anajulia-network
+
+  modulo1:
+    image: anajulia/modulo1:latest
+    hostname: modulo1
+    container_name: modulo1
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      MONGODB_URI: mongodb://mongodb:27017/anajulia?serverSelectionTimeoutMs=15000&connectTimeoutMS=15000
+    depends_on:
+      - mongodb
+      - opensearch
+      - graylog
+    networks:
+      - anajulia-network
+
+  modulo2.1:
+    image: anajulia/modulo2.1:latest
+    hostname: modulo2.1
+    container_name: modulo2.1
+    ports:
+      - "8080:8080"
+    environment:
+      SECRET_KEY: "o36pEukmNV48mJkKkRt8GoYtfbXfszupz6Zrq6jPAEC"
+      MODULO1_URI: http://modulo1:8082
+      MODULO2.2_URI: http://modulo2.2:8081
+    depends_on:
+      - modulo1
+      - modulo2.2
+    networks:
+      - anajulia-network
+
+  modulo2.2:
+    image: anajulia/modulo2.2:latest
+    hostname: modulo2.2
+    container_name: modulo2.2
+    environment:
+      SECRET_KEY: "o36pEukmNV48mJkKkRt8GoYtfbXfszupz6Zrq6jPAEC"
+      MONGODB_URI: mongodb://mongodb:27017/anajulia?serverSelectionTimeoutMs=15000&connectTimeoutMS=15000
+    depends_on:
+      - mongodb
+    networks:
+      - anajulia-network
+
+networks:
+  anajulia-network:
+    driver: bridge
