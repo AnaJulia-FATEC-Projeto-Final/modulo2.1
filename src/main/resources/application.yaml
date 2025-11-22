@@ -1,3 +1,7 @@
+logging:
+  level:
+    org.springframework.cloud.gateway: DEBUG
+
 spring:
   application:
     name: modulo2.1
@@ -13,7 +17,7 @@ spring:
           predicates:
             - Path=/anajulia/modulo1/**
 
-        - id: modulo2_2
+        - id: modulo2.2
           uri: ${MODULO2_2_URI}
           predicates:
             - Path=/anajulia/modulo2.2/**
