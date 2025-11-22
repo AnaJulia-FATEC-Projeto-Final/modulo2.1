@@ -9,12 +9,12 @@ spring:
     gateway:
       routes:
         - id: modulo1
-          uri: ${MODULO1_URL}
+          uri: ${MODULO1_URI}
           predicates:
             - Path=/anajulia/modulo1/**
 
         - id: modulo2_2
-          uri: ${MODULO2_2_URL}
+          uri: ${MODULO2_2_URI}
           predicates:
             - Path=/anajulia/modulo2.2/**
 
